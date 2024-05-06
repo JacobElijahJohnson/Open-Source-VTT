@@ -1,5 +1,8 @@
+// See the Electron documentation for details on how to use preload scripts:
+// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 const { contextBridge, ipcRenderer } = require('electron')
+
 contextBridge.exposeInMainWorld('electronAPI', {
-    save: () => ipcRenderer.on("save"),
-    sendFile: (blob) => ipcRenderer.send('saveFile', blob) 
+  sendSheet: (sheet) => ipcRenderer.send('save-sheet', sheet),
+  openSheet: () => ipcRenderer.invoke("open-sheet")
 })

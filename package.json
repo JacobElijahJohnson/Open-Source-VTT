@@ -1,6 +1,6 @@
 {
-  "name": "3dvtt",
-  "productName": "3dvtt",
+  "name": "my-app",
+  "productName": "my-app",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",
@@ -9,30 +9,25 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\"",
-    "build": "tsc"
+    "lint": "echo \"No linting configured\""
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.4.0",
-    "@electron-forge/maker-deb": "^7.4.0",
-    "@electron-forge/maker-rpm": "^7.4.0",
-    "@electron-forge/maker-squirrel": "^7.4.0",
-    "@electron-forge/maker-zip": "^7.4.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
-    "@electron-forge/plugin-fuses": "^7.4.0",
-    "@electron/fuses": "^1.8.0",
-    "electron": "30.0.2"
+    "@electron-forge/cli": "^7.3.0",
+    "@electron-forge/maker-deb": "^7.3.0",
+    "@electron-forge/maker-rpm": "^7.3.0",
+    "@electron-forge/maker-squirrel": "^7.3.0",
+    "@electron-forge/maker-zip": "^7.3.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.3.0",
+    "@electron-forge/plugin-fuses": "^7.3.0",
+    "@electron/fuses": "^1.7.0",
+    "electron": "29.1.0"
   },
   "keywords": [],
-  "author": "jjohnson3",
+  "author": "Misinko",
   "license": "MIT",
   "dependencies": {
     "babylonjs": "^7.5.0",
-    "babylonjs-viewer": "^7.5.0",
-    "cjs-loader": "^0.1.0",
     "electron-squirrel-startup": "^1.0.0",
-    "firebase": "^10.11.1",
-    "firebase-tools": "^13.8.0",
-    "typescript": "^5.4.5"
+    "gun": "^0.2020.1239"
   }
 }
