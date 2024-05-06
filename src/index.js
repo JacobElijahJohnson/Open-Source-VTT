@@ -1,9 +1,6 @@
-const { CANCELLED } = require('dns');
-const { app, BrowserWindow, BrowserView, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
-const { sandboxed } = require('process');
-
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -17,21 +14,72 @@ const createWindow = () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false
     },
   });
 
+  const menu = Menu.buildFromTemplate([
+    {
+      label: "File",
+      submenu: [
+        {
+          label: "Save File",
+          click: () => {
+            mainWindow.webContents.send('save');
+          }
+        },
+        {
+          label: "Open File",
+          click: () => {
+            dialog.showOpenDialog( options = { 
+              defaultPath: path.join(app.getAppPath(), 'src\\Maps'),
+              filters: [
+                {
+                  name: 'json',
+                  extensions: ['json']}
+              ]
+            }).then((fileName) => {
+              console.log(fileName)
+              mainWindow.webContents.send('load', fileName.filePaths[0]);
+            }).catch(err => {
+              console.log(err);
+            })
+          }
+        },
+        {
+          label: 'connect',
+          click : async () => {
+            
+
+          }
+        }
+      ]
+    }
+  ])
+
+  Menu.setApplicationMenu(menu)
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
-
 };
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.whenReady().then(() => {
+  createWindow();
+
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
+  });
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -42,66 +90,28 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
-});
+ipcMain.on("saveFile", (event, data) => {
+  const blob = new Blob([data], { type: "octet/stream" });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-
-
-
-/*ipcMain.on('get-change', async (event, result) => {
-  change = await result;
-  view.webContents.loadFile(result)
-});*/
-
-ipcMain.on('save-sheet', async (event, data) => {
-   sheet = await JSON.stringify(data);
-   console.log(app.getAppPath())
-   dialog.showSaveDialog(options = {
-    defaultPath: path.join(app.getAppPath(), 'src\\Character Sheets'),
+  dialog.showSaveDialog( options = { 
+    defaultPath: path.join(app.getAppPath(), 'src\\Maps'),
     filters: [
       {
         name: 'json',
         extensions: ['json']}
     ]
-   }).then((fileName) => {
-    if(!fileName.canceled){fs.writeFile(fileName.filePath.toString(), sheet, 'utf8', (err) => {
-      dialog.showErrorBox*('Save failed');
-    })}
+  }).then((fileName) => {
+    const test = async () => {
+      const blobBuffer = Buffer.from(await blob.arrayBuffer())
+      if(!fileName.canceled){fs.writeFile(fileName.filePath.toString(), blobBuffer, 'utf8', (err) => {
+        dialog.showErrorBox*('Save failed');
+      })}
+    }
+    test();
   }).catch(err => {
     console.log(err);
   })
 })
 
-
-async function readSheet(){
-  const {canceled, filePaths} = await dialog.showOpenDialog( options = { 
-    defaultPath: path.join(app.getAppPath(), 'src\\Character Sheets'),
-    filters: [
-      {
-        name: 'json',
-        extensions: ['json']}
-    ]
-  })
-  console.log(filePaths[0])
-  const sheet = JSON.parse(fs.readFileSync(filePaths[0].toString(), 'utf8'));
-  console.log(sheet);
-  return sheet;
-}
-
-
-
-
-
-ipcMain.handle("open-sheet", readSheet)
-
-
-
-
-
+// In this file you can include the rest of your app's specific main process
+// code. You can also put them in separate files and import them here.
